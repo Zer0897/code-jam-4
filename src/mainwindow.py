@@ -3,8 +3,9 @@ import tkinter as tk
 import asyncio
 from pygame import mixer
 import os
-from cache import Cache
-
+from random import randint
+from .cache import Cache
+from .approot import AppRoot
 
 class Tinder:
     '''The main class for the application.'''
@@ -27,13 +28,13 @@ class Tinder:
             self.config = cp['DEFAULT']
 
         # setting up the tkinter root
-        self.root = tk.Tk()
+        self.root = AppRoot()
         self.root.title(self.config['main.title'])
         self.root.geometry(self.config['main.geometry'])
         self.root.minsize(400, 500)
-        self.root.maxsize(400, 500)
+        #self.root.maxsize(400, 500)
         self.root.configure(background=self.config['main.background'])
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        #self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # getting screen width and height for use with teleporting window/jumpscare
         self.screen_x = self.root.winfo_screenwidth()
@@ -87,9 +88,6 @@ class Tinder:
             # forget packs all of the children (This clears the window)
             item.pack_forget()
 
-        # make a new Frame
-        self.frame = tk.Frame(self.root, bg="black")
-
         # if a dict wasn't passed to the function, get a dict from self.cats
         if not cat:
             try:
@@ -98,6 +96,9 @@ class Tinder:
                 # the cache is empty so refill it
                 self.loop.run_until_complete(self.cache.refill())
                 cat = self.cache.cats.pop(0)
+
+        # make a new Frame
+        self.frame = tk.Frame(self.root.container, bg="black")
 
         # getting base cat variables from the dict
         image = cat["image"]
@@ -148,17 +149,17 @@ class Tinder:
             # make a button to allow the user to pass through the image
             # Note: since everyone likes scary monsters, only make a Like button
             tk.Button(
-                self.frame, text=self.config['like.text'], background="green",
+                self.frame, text=self.config['like.text'], background=self.config['like.background'],
                 command=self.new_image).pack(side=tk.BOTTOM)
 
         # image was not a jumpscare, don't do jumpscare things
         else:
             # setting up like and dislike buttons on opposite sides of the screen
             tk.Button(
-                self.frame, text=self.config['like.text'], background="green",
+                self.frame, text=self.config['like.text'], background=self.config['like.background'],
                 command=self.new_image).pack(side=tk.RIGHT)
             tk.Button(
-                self.frame, text=self.config['dislike.text'], background="red",
+                self.frame, text=self.config['dislike.text'], background=self.config['dislike.background'],
                 command=self.new_image).pack(side=tk.LEFT)
 
             # defining button functions
@@ -166,23 +167,15 @@ class Tinder:
                 '''Resets the window with the same cat for when the user
                 goes to bio and clicks back'''
 
-                # calls the new image function and passes the current cat dict
-                self.new_image(cat)
+                self.root.show_frame("MainPage")
 
             def get_bio():
                 '''Creates the Bio Widget for the current cat'''
-
-                # get all children of the root window
-                widget_list = self.all_children()
-                for item in widget_list:
-                    # forget packs all of the children (This clears the window)
-                    item.pack_forget()
-
                 # make a new Frame for the bio
-                self.frame = tk.Frame(self.root, bg="black", height=450, width=400)
+                self.bio = tk.Frame(self.root.container, bg="black", height=450, width=400)
 
                 # makes a Text widget on the Frame
-                bio = tk.Text(self.frame)
+                bio = tk.Text(self.bio, width = 40, height = 23)
 
                 # inserting all of the Bio to the text widget
                 bio.insert(tk.END, f"Name: {cat_name} \n")
@@ -197,28 +190,32 @@ class Tinder:
 
                 # setting up like/dislike/Back to Photo buttons on the bio screen
                 tk.Button(
-                    self.frame, text=self.config['like.text'],
+                    self.bio, text=self.config['like.text'],
                     background=self.config['like.background'],
                     command=self.new_image).pack(side=tk.RIGHT)
                 tk.Button(
-                    self.frame, text=self.config['dislike.text'],
+                    self.bio, text=self.config['dislike.text'],
                     background=self.config['dislike.background'],
                     command=self.new_image).pack(side=tk.LEFT)
                 tk.Button(
-                    self.root, text=self.config['back.text'],
+                    self.bio, text=self.config['back.text'],
                     background=self.config['back.background'],
                     command=back_to_photo).pack(side=tk.BOTTOM)
 
-                # packing the frame
-                self.frame.pack()
+                # packing the frame and adding it to the root Canvas
+                # then showing it
+                self.bio.pack()
+                self.root.add_page(self.bio, "BioPage")
+                self.root.show_frame("BioPage")
 
             # making and packing the Bio button for users to look at the cat's bio
             tk.Button(
                 self.frame, text=self.config['bio.text'], background=self.config['bio.background'],
                 command=get_bio).pack(side=tk.BOTTOM)
 
-        # packing the frame
-        self.frame.pack()
+        # adding the frame to our root Canvas and then showing it
+        self.root.add_page(self.frame, "MainPage")
+        self.root.show_frame("MainPage")
 
         # starting the main tkinter loop
         self.root.mainloop()
