@@ -5,7 +5,6 @@ from pygame import mixer
 import os
 from random import randint
 from .cache import Cache
-from .approot import AppRoot
 
 
 class Tinder:
@@ -29,7 +28,7 @@ class Tinder:
             self.config = cp['DEFAULT']
 
         # setting up the tkinter root
-        self.root = AppRoot()
+        self.root = tk.Tk()
         self.root.title(self.config['main.title'])
         self.root.geometry(self.config['main.geometry'])
         self.root.minsize(400, 500)
@@ -99,7 +98,9 @@ class Tinder:
                 cat = self.cache.cats.pop(0)
 
         # make a new Frame
-        self.frame = tk.Frame(self.root.container, bg="black")
+        self.canvas = tk.Canvas(self.root)
+        self.canvas.pack()
+        self.frame = tk.Frame(self.canvas, bg="black")
 
         # getting base cat variables from the dict
         image = cat["image"]
@@ -170,13 +171,14 @@ class Tinder:
             def back_to_photo():
                 '''Resets the window with the same cat for when the user
                 goes to bio and clicks back'''
-
-                self.root.show_frame("MainPage")
+                for i in range(250):
+                    self.canvas.move(self.bio_id, 0, 2)
+                    self.canvas.update()
 
             def get_bio():
                 '''Creates the Bio Widget for the current cat'''
                 # make a new Frame for the bio
-                self.bio = tk.Frame(self.root.container, bg="black", height=450, width=400)
+                self.bio = tk.Frame(self.canvas, bg="black", height=450, width=400)
 
                 # makes a Text widget on the Frame
                 bio = tk.Text(self.bio, width=40, height=23)
@@ -209,8 +211,12 @@ class Tinder:
                 # packing the frame and adding it to the root Canvas
                 # then showing it
                 self.bio.pack()
-                self.root.add_page(self.bio, "BioPage")
-                self.root.show_frame("BioPage")
+                self.bio_id = self.canvas.create_window(200, 750, window=self.bio)
+                def animate():
+                    for i in range(250):
+                        self.canvas.move(self.bio_id, 0, -2)
+                        self.canvas.update()
+                self.root.after(0, animate)
 
             # making and packing the Bio button for users to look at the cat's bio
             tk.Button(
@@ -218,8 +224,7 @@ class Tinder:
                 command=get_bio).pack(side=tk.BOTTOM)
 
         # adding the frame to our root Canvas and then showing it
-        self.root.add_page(self.frame, "MainPage")
-        self.root.show_frame("MainPage")
+        self.frame.pack()
 
         # starting the main tkinter loop
         self.root.mainloop()
