@@ -7,6 +7,7 @@ from random import randint
 from .cache import Cache
 from .approot import AppRoot
 
+
 class Tinder:
     '''The main class for the application.'''
 
@@ -32,7 +33,7 @@ class Tinder:
         self.root.title(self.config['main.title'])
         self.root.geometry(self.config['main.geometry'])
         self.root.minsize(400, 500)
-        #self.root.maxsize(400, 500)
+        self.root.maxsize(400, 500)
         self.root.configure(background=self.config['main.background'])
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -147,7 +148,8 @@ class Tinder:
             # make a button to allow the user to pass through the image
             # Note: since everyone likes scary monsters, only make a Like button
             tk.Button(
-                self.root, text=self.config['like.text'], background=self.config['like.background'],
+                self.root, text=self.config['like.text'],
+                background=self.config['like.background'],
                 command=self.new_image).pack(side=tk.BOTTOM)
 
         # image was not a jumpscare, don't do jumpscare things
@@ -156,10 +158,12 @@ class Tinder:
             tk.Label(self.frame, image=image).pack(side=tk.TOP)
             # setting up like and dislike buttons on opposite sides of the screen
             tk.Button(
-                self.frame, text=self.config['like.text'], background=self.config['like.background'],
+                self.frame, text=self.config['like.text'],
+                background=self.config['like.background'],
                 command=self.new_image).pack(side=tk.RIGHT)
             tk.Button(
-                self.frame, text=self.config['dislike.text'], background=self.config['dislike.background'],
+                self.frame, text=self.config['dislike.text'],
+                background=self.config['dislike.background'],
                 command=self.new_image).pack(side=tk.LEFT)
 
             # defining button functions
@@ -175,7 +179,7 @@ class Tinder:
                 self.bio = tk.Frame(self.root.container, bg="black", height=450, width=400)
 
                 # makes a Text widget on the Frame
-                bio = tk.Text(self.bio, width = 40, height = 23)
+                bio = tk.Text(self.bio, width=40, height=23)
 
                 # inserting all of the Bio to the text widget
                 bio.insert(tk.END, f"Name: {cat_name} \n")

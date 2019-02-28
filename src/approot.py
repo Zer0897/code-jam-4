@@ -1,5 +1,4 @@
 import tkinter as tk
-import time
 
 
 class AppRoot(tk.Tk):
@@ -14,14 +13,15 @@ class AppRoot(tk.Tk):
         self.frames = dict()
 
     def show_frame(self, page_name):
-        '''Show a frame for the given page name (Animates the BioPage 
+        '''Show a frame for the given page name (Animates the BioPage
         to either slide up or down'''
         try:
             # get the Bio Page id
             frame = self.frames["BioPage"]
-        except:
+        except KeyError:
             # it doesn't exist, do nothing
             return
+
         def animate():
             '''Animates the bio page sliding up'''
             if page_name == "MainPage":
@@ -34,6 +34,7 @@ class AppRoot(tk.Tk):
                 for i in range(250):
                     self.container.move(frame, 0, -2)
                     self.container.update()
+
         # after 0 seconds, run animate (this makes it not blocking)
         self.after(0, animate)
 
