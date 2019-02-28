@@ -212,10 +212,12 @@ class Tinder:
                 # then showing it
                 self.bio.pack()
                 self.bio_id = self.canvas.create_window(200, 750, window=self.bio)
+
                 def animate():
                     for i in range(250):
                         self.canvas.move(self.bio_id, 0, -2)
                         self.canvas.update()
+
                 self.root.after(0, animate)
 
             # making and packing the Bio button for users to look at the cat's bio
