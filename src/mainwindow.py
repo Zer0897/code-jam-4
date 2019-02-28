@@ -34,7 +34,7 @@ class Tinder:
         self.root.minsize(400, 500)
         #self.root.maxsize(400, 500)
         self.root.configure(background=self.config['main.background'])
-        #self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         # getting screen width and height for use with teleporting window/jumpscare
         self.screen_x = self.root.winfo_screenwidth()
@@ -79,7 +79,7 @@ class Tinder:
 
         # if the previous image was a jumpscare, resize the window and reset the variable
         if self.jumpscare:
-            self.root.maxsize(400, 500)
+            self.root.attributes("-fullscreen", False)
             self.jumpscare = False
 
         # get all children of the root window
@@ -126,18 +126,16 @@ class Tinder:
             # pack the widget on the top of the frame
             name.pack(side=tk.TOP)
 
-        # make a Label widget with the cat/jumpscare image and pack it
-        tk.Label(self.frame, image=image).pack(side=tk.TOP)
-
         # the image is a jumpscare, so do jumpscare things
         if jumpscare:
             # remember that this image is a jumpscare
             self.jumpscare = True
-
+            # setting up jumpscare image
+            tk.Label(self.root, image=image).pack(side=tk.TOP)
             # allow the root window to get bigger
             self.root.maxsize(self.screen_x, self.screen_y)
             # make the root window bigger (makes jumpscare image scarier)
-            self.root.geometry(f"{self.screen_x}x{self.screen_y}+0+0")
+            self.root.attributes("-fullscreen", True)
 
             # play a jumpscare sound
             mixer.music.load(
@@ -149,11 +147,13 @@ class Tinder:
             # make a button to allow the user to pass through the image
             # Note: since everyone likes scary monsters, only make a Like button
             tk.Button(
-                self.frame, text=self.config['like.text'], background=self.config['like.background'],
+                self.root, text=self.config['like.text'], background=self.config['like.background'],
                 command=self.new_image).pack(side=tk.BOTTOM)
 
         # image was not a jumpscare, don't do jumpscare things
         else:
+            # setting up cat image
+            tk.Label(self.frame, image=image).pack(side=tk.TOP)
             # setting up like and dislike buttons on opposite sides of the screen
             tk.Button(
                 self.frame, text=self.config['like.text'], background=self.config['like.background'],

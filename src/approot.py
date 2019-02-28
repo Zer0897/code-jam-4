@@ -40,11 +40,11 @@ class AppRoot(tk.Tk):
     def add_page(self, page, page_name):
         '''Adds a page to the canvas with the given name'''
         # if it's a bio page, make it lower so we can scroll it up
-        if name == "BioPage":
+        if page_name == "BioPage":
             frame_id = self.container.create_window(200, 750, window=page)
         else:
             frame_id = self.container.create_window(200, 250, window=page)
         # pack the container
         self.container.pack()
         # add the frame id to the frames dict
-        self.frames[name] = frame_id
+        self.frames[page_name] = frame_id
