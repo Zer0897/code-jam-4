@@ -5,12 +5,19 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
-flake8-docstrings = "*"
+pytest = "*"
 
 [packages]
+more-itertools = "*"
+pillow = "*"
+pygame = "*"
+aiohttp = "*"
+configparser = "*"
 
 [requires]
 python_version = "3.7"
 
 [scripts]
 lint = "python -m flake8"
+start = "python -m src"
+test = "python -m pytest"
