@@ -137,13 +137,16 @@ class Animater:
             self.run()
 
     def run(self):
-        for motion in self._motions:
+        freeze = self._motions.copy()
+        done = set()
+        for motion in freeze:
             try:
                 next(motion)()
                 self.canvas.update()
             except StopIteration:
-                self._motions.remove(motion)
-                break
+                done.add(motion)
+        new = self._motions - freeze
+        self._motions = (freeze - done).union(new)
 
     def add(self, motion: Motion):
         self._motions.add(iter(motion))
