@@ -24,15 +24,21 @@ class Front(widget.PrimaryFrame):
 
     def __next(self):
         data: dict = self.cache.next()
-        image = process_image(data.pop('image'), 400, 280)
+        image = process_image(
+            data.pop('image'),
+            self.window.winfo_width(),
+            self.window.winfo_height()
+        )
         name = data.pop('name')
         self.__load(name, image, data)
 
     def __load(self, name, image, data):
         self.title.config(text=name)
-        self.bio.data.load(data)
-        self._last = self.image
         self.image = View(image, 'image')
+        self.bio = View(Bio(self.window), 'widget')
+
+        self._last = self.image
+        self.bio.data.load(data)
         self.update()
 
     def __change_image(self, direction: Direction):
@@ -44,7 +50,7 @@ class Front(widget.PrimaryFrame):
         self.window = Window(self)
         self.commandbar = widget.SecondaryFrame(self)
 
-        self.bio = View(Bio(self.window), 'widget')
+        self.bio = None
         self.image = None
 
         self.btn_dislike = widget.PrimaryButton(
@@ -56,21 +62,21 @@ class Front(widget.PrimaryFrame):
         self.btn_like = widget.PrimaryButton(
             self.commandbar, text='Yep', bg='green', command=self.cmd_like
         )
-        self.title.pack(fill='x')
-        self.window.pack(fill='both')
-        self.commandbar.pack(side='bottom', fill='x')
+        self.title.pack(fill='x', expand=True)
+        self.window.pack(fill='both', expand=True)
+        self.commandbar.pack(side='bottom', fill='x', expand=True)
 
-        self.btn_bio.pack()
         self.btn_dislike.pack(side='left')
-        self.btn_like.pack(side='right')
+        self.btn_bio.pack(side='left')
+        self.btn_like.pack(side='left')
 
         self.cache = ImageCache(self.cachesize)
 
     def cmd_dislike(self):
-        self.__change_image('right')
+        self.__change_image('left')
 
     def cmd_like(self):
-        self.__change_image('left')
+        self.__change_image('right')
 
     def cmd_bio(self):
         if self.window.current != self.bio:
@@ -93,11 +99,11 @@ class Front(widget.PrimaryFrame):
 
 class Bio(widget.PrimaryFrame):
 
-    # def init(self):
-    #     width = self.master.winfo_width()
-    #     height = self.master.winfo_height()
-    #     self.config(height=height, width=width)
-    #     #self.pack_propagate(0)
+    def init(self):
+        width = self.master.winfo_width()
+        height = self.master.winfo_height()
+        self.config(height=height, width=width)
+        self.pack_propagate(0)
 
     def __make_item(self, name, value):
         item = widget.SecondaryFrame(self)
