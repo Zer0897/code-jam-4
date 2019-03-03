@@ -73,6 +73,9 @@ class Front(widget.PrimaryFrame):
         self.btn_like = widget.PrimaryButton(
             self.commandbar, text='Yep', bg='green', command=self.cmd_like
         )
+        self.update()
+
+    def build(self):
         self.title.pack(fill='x', expand=True)
         self.window.pack(fill='both', expand=True)
         self.commandbar.pack(side='bottom', fill='both', expand=True)
@@ -80,6 +83,7 @@ class Front(widget.PrimaryFrame):
         self.btn_dislike.pack(side='left', padx=10)
         self.btn_like.pack(side='right', padx=10)
         self.btn_bio.pack(pady=10)
+        self.update()
 
         self.cache = ImageCache(self.cachesize)
         self.cache.start()

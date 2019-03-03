@@ -15,8 +15,10 @@ class Splash(widget.PrimaryFrame):
         self.intro.pack(fill='both', expand=True)
 
         self.btn_confirm = widget.PrimaryButton(self.intro.window, command=self.next, text='Okay')
-        bouncer = View(self.intro.window, window=self.btn_confirm)
 
+    def build(self):
+        self.intro.build()
+        bouncer = View(self.intro.window, window=self.btn_confirm)
         self.bounce(bouncer)
 
     def bounce(self, view):
@@ -27,7 +29,7 @@ class Splash(widget.PrimaryFrame):
         self.after(0, view.master.run, motion)
 
     def next(self):
-        pass
+        self.master.master.switch()
 
 
 class Intro(widget.PrimaryFrame):
@@ -52,8 +54,6 @@ class Intro(widget.PrimaryFrame):
             font=('sys', 12), justify='center'
         )
         self.update()
-
-        self.after(0, self.build)
 
     def build(self):
         self.window.set_view(self.title)
