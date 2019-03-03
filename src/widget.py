@@ -1,17 +1,18 @@
 import tkinter as tk
 from configparser import ConfigParser
-from . import THEME
+from . import THEME, IMAGES
 
 parser = ConfigParser()
 parser.read(THEME)
 
 
 class SecondaryFrame(tk.Frame):
-    DEFAULT = {}
+    DEFAULT = {
+        'bg': 'gray'
+    }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -23,8 +24,7 @@ class SecondaryButton(tk.Button):
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -32,12 +32,12 @@ class SecondaryButton(tk.Button):
 class SecondaryLabel(tk.Label):
     DEFAULT = {
         'justify': 'left',
-        'width': 10
+        'width': 10,
+        'bg': 'gray'
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -46,8 +46,7 @@ class SecondaryCanvas(tk.Canvas):
     DEFAULT = {}
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -58,8 +57,7 @@ class PrimaryFrame(tk.Frame):
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -67,12 +65,11 @@ class PrimaryFrame(tk.Frame):
 class PrimaryButton(tk.Button):
     DEFAULT = {
         'height': 3,
-        'width': 15
+        'width': 10
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -85,8 +82,7 @@ class PrimaryLabel(tk.Label):
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
 
@@ -97,7 +93,19 @@ class PrimaryCanvas(tk.Canvas):
     }
 
     def __init__(self, *args, **kwds):
-        self.DEFAULT.update(kwds)
-        super().__init__(*args, **self.DEFAULT)
+        super().__init__(*args, **{**self.DEFAULT, **kwds})
+        if hasattr(self, 'init'):
+            self.init()
+
+
+class PrimaryCheckbutton(tk.Checkbutton):
+    DEFAULT = {
+        'bg': 'black'
+    }
+    img = IMAGES / 'checkbox.png'
+
+    def __init__(self, *args, **kwds):
+        img = tk.PhotoImage(file=self.img)
+        super().__init__(*args, image=img, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
