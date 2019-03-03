@@ -1,6 +1,7 @@
 import json
 
-from .view import Window, View
+from .view import Window, View, BounceBall
+from .animate import Direction
 from . import widget, DOCS
 
 
@@ -33,24 +34,32 @@ class Splash(widget.PrimaryFrame):
         questions = json.load(fp)
 
     def init(self):
+        self.window = Window(self, bg='gray')
         self.title = widget.PrimaryLabel(
             self, text=self.master.master.title(),
-            font=('Courier', 14), wraplength=300
+            font=('Courier', 17), wraplength=300
         )
-
-        self.window = Window(self, bg='gray')
         self.intro = View(
             self.window,
             text=self.intro,
             width=self.window.winfo_reqwidth(),
-            font=('sys', 10), justify='center'
+            font=('sys', 12), justify='center'
         )
         self.window.set_view(self.intro)
 
-        self.btn_confirm = widget.PrimaryButton(self, command=self.begin, text='Okay')
+        self.btn_confirm = widget.PrimaryButton(self.window, command=self.begin, text='Okay')
 
-        self.title.pack(fill='x', pady=20)
-        self.btn_confirm.pack(side='bottom', expand=True)
+        self.title.pack(fill='x', pady=10)
+        self.window.pack(fill='both', expand=True)
+        self.bounce()
+
+    def bounce(self):
+        bouncer = View(self.window, window=self.btn_confirm)
+        wid = self.window.set_view(bouncer, self.window.center)
+        motion = BounceBall(self.window, wid, self.window.origin)
+        motion.kick(Direction.RIGHT)
+
+        self.after(0, self.window.run, motion)
 
     def begin(self):
         pass

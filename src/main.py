@@ -3,7 +3,7 @@ import tkinter as tk
 from contextlib import suppress
 
 from .front import Front
-# from .splash import Splash
+from .splash import Splash
 from . import SETTINGS, widget
 
 
@@ -23,13 +23,13 @@ class App(tk.Tk):
 
         self.frame = widget.PrimaryFrame(self)
         self.frame.pack(expand=True, fill='both')
-
-        # self.splash = Splash(self.frame)
-        # self.splash.pack(expand=True, fill='both')
-        self.front = Front(self.frame)
-        self.front.pack(fill='both', expand=True)
+    
+        self.splash = Splash(self.frame)
+        self.splash.pack(expand=True, fill='both')
+        # self.front = Front(self.frame)
+        # self.front.pack(fill='both', expand=True)
 
     def cleanup(self):
         with suppress(Exception):
-            self.front.cleanup()
+            # self.front.cleanup()
             self.destroy()

@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from . import widget
-from .animate import Coord, Animater, Direction
+from .animate import Coord, Animater, Direction, Motion
 
 
 class Window(widget.PrimaryCanvas):
@@ -19,12 +19,12 @@ class Window(widget.PrimaryCanvas):
 
     def __set(self, view: View, coord: Coord):
         wid = view.draw(coord, anchor='nw')
+        self.current = view
         self.views[view] = wid
         return wid
 
-    def set_view(self, view: View):
-        self.current = view
-        self.__set(self.current, self.origin)
+    def set_view(self, view: View, coord: Coord = None):
+        return self.__set(view, coord or self.origin)
 
     def move_view(self, view: View, end: Coord):
         wid = self.views.get(view)
@@ -52,14 +52,11 @@ class Window(widget.PrimaryCanvas):
             return
         if not isinstance(direction, Direction):
             direction = Direction[direction.upper()]  # Cast string for convenience
-
         self.animater.clear()
-
         last = self.current
-        self.current = view
+
         self.move_in(self.current, direction.flip())
         self.move_out(last, direction)
-
         self.animater.start()
 
     def get_distance(self, direction: Direction):
@@ -73,6 +70,10 @@ class Window(widget.PrimaryCanvas):
         else:
             raise NotImplementedError
 
+    def run(self, motion: Motion):
+        self.animater.add(motion)
+        self.animater.start()
+
     @property
     def active(self):
         return self.animater.running
@@ -80,6 +81,11 @@ class Window(widget.PrimaryCanvas):
     @property
     def origin(self):
         return Coord(self.canvasx(0), self.canvasy(0))
+
+    @property
+    def center(self):
+        br = self.origin + Coord(self.winfo_reqwidth(), self.winfo_reqheight())
+        return self.origin.midpoint(br)
 
 
 class DrawType(Enum):

@@ -6,7 +6,6 @@ import time
 import math
 from typing import NamedTuple, Callable, TypeVar, Generator
 from enum import Enum
-from dataclasses import dataclass
 from functools import partialmethod
 
 
@@ -54,16 +53,12 @@ class Animater:
         return bool(self._motions)
 
 
-@dataclass
 class Motion:
-    """
-
-    """
-    canvas: tk.Canvas
-    id: int
-    end: Coord
-
-    speed: int = 1
+    def __init__(self, canvas: tk.Canvas, id: str, end: Coord, speed: float = 1):
+        self.canvas = canvas
+        self.id = id
+        self.end = end
+        self.speed = speed ** 3
 
     def __iter__(self):
         return self.start()
@@ -82,9 +77,8 @@ class Motion:
         The entry point for generating move commands.
         """
         self.time = time.time()
-        self.start = self.current
-        self.distance = self.start.distance(self.end)
-        self.speed = self.speed ** 3
+        self.beg = self.current
+        self.distance = self.beg.distance(self.end)
         while self.current != self.end:
             yield self.move
 
@@ -102,13 +96,16 @@ class Motion:
 
     @property
     def increment(self):
-        mult = (self.time * self.speed) / self.distance
-        point = (self.end - self.start) * mult + self.start
-
-        if point.distance(self.end) > self.journey:
+        future = self.future
+        if future.distance(self.end) > self.journey:
             return self.end - self.current
         else:
-            return point - self.current
+            return future - self.current
+
+    @property
+    def future(self):
+        mult = (self.time * self.speed) / self.distance
+        return (self.end - self.beg) * mult + self.beg
 
     @property
     def current(self):
@@ -117,6 +114,56 @@ class Motion:
     @property
     def journey(self):
         return self.current.distance(self.end)
+
+
+class BounceBall(Motion):
+
+    def kick(self, direction: Point, speed=8):
+        self.direction = direction
+        self.speed = speed
+        self.end = self.direction + self.current
+
+    @property
+    def increment(self):
+        self.canvas.update()
+        self.end += self.get_bounce()
+        return self.future - self.current
+
+    def get_bounce(self):
+        x1, y1, x2, y2 = self.canvas.bbox(self.id)
+
+        bounce = Coord(0, 0)
+        if x1 <= self.bound_x1:
+            print('x1', x1, self.bound_x1)
+            bounce += Direction.RIGHT
+        if y1 >= self.bound_y1:
+            print('y1', y1, self.bound_y1)
+            bounce += Direction.UP
+        if x2 >= self.bound_x2:
+            print('x2', x2, self.bound_x2)
+            bounce += Direction.LEFT
+        if y2 >= self.bound_y2:
+            print('y2', y2, self.bound_y2)
+            bounce += Direction.DOWN
+        return bounce
+
+    @property
+    def bound_x1(self):
+        return self.canvas.winfo_x()
+
+    @property
+    def bound_y1(self):
+        return self.canvas.winfo_y()
+
+    @property
+    def bound_x2(self):
+        # self.canvas.update()
+        return self.bound_x1 + self.canvas.winfo_width()
+
+    @property
+    def bound_y2(self):
+        # self.canvas.update()
+        return self.bound_y1 + self.canvas.winfo_height()
 
 
 class Coord(NamedTuple):
@@ -149,10 +196,10 @@ class Coord(NamedTuple):
     Operand = TypeVar('Operand', 'Coord', float)
 
     def __apply(self, op: Callable, other: Coord.Operand) -> Coord:
-        if not isinstance(other, self.__class__):
-            other = self.__class__(other, other)
         if isinstance(other, Direction):
             other = other.value
+        elif not isinstance(other, self.__class__):
+            other = self.__class__(other, other)
 
         x = op(self.x, other.x)
         y = op(self.y, other.y)
@@ -182,6 +229,9 @@ class Coord(NamedTuple):
         """
         diff = other - self
         return math.hypot(*diff)
+
+    def flip(self):
+        return Coord(0, 0) - self
 
     __add__ = partialmethod(__apply, operator.add)
     __sub__ = partialmethod(__apply, operator.sub)
