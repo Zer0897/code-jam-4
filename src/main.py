@@ -29,4 +29,9 @@ class App(tk.Tk):
 
     def cleanup(self):
         self.front.cleanup()
+        results = self.front.quiz.results()
+        text = tk.Text(self)
+        text.insert("1.0", results)
+        text.pack()
+        sleep(5)
         self.destroy()

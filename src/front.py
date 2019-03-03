@@ -6,6 +6,7 @@ from .animate import Direction
 from .view import Window, View
 from .cache import ImageCache
 from .loading import Loading
+from .quiz import Quiz
 
 def process_image(image: bytes, width: int, height: int):
     im = Image.open(io.BytesIO(image))
@@ -16,6 +17,7 @@ def process_image(image: bytes, width: int, height: int):
 class Front(widget.PrimaryFrame):
 
     cachesize = 20
+    quiz = Quiz()
 
     # Quick fix to keep a reference count on the
     # last image, making sure the garbage collector
@@ -75,9 +77,11 @@ class Front(widget.PrimaryFrame):
         self.after(0, self.__next)
 
     def cmd_dislike(self):
+        self.quiz.dislikes+=1
         self.__next('left')
 
     def cmd_like(self):
+        self.quiz.likes+=1
         self.__next('right')
 
     def cmd_bio(self):
