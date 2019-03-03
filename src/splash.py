@@ -1,7 +1,7 @@
 import json
 
-from .view import Window, View, BounceBall
-from .animate import Direction
+from .view import Window, View
+from .animate import Direction, BounceBall
 from . import widget, DOCS
 
 
@@ -49,16 +49,15 @@ class Splash(widget.PrimaryFrame):
 
         self.btn_confirm = widget.PrimaryButton(self.window, command=self.begin, text='Okay')
 
-        self.title.pack(fill='x', pady=10)
-        self.window.pack(fill='both', expand=True)
+        self.title.pack(fill='both')
+        self.window.pack(fill='both')
         self.bounce()
 
     def bounce(self):
         bouncer = View(self.window, window=self.btn_confirm)
         wid = self.window.set_view(bouncer, self.window.center)
-        motion = BounceBall(self.window, wid, self.window.origin)
-        motion.kick(Direction.RIGHT)
-
+        motion = BounceBall(self.window, wid, self.window.origin, speed=6)
+        motion.kick(Direction.DOWN)
         self.after(0, self.window.run, motion)
 
     def begin(self):

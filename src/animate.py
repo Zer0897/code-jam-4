@@ -4,6 +4,7 @@ import tkinter as tk
 import operator
 import time
 import math
+import random
 from typing import NamedTuple, Callable, TypeVar, Generator
 from enum import Enum
 from functools import partialmethod
@@ -76,11 +77,14 @@ class Motion:
         """
         The entry point for generating move commands.
         """
+        self.reset()
+        while self.current != self.end:
+            yield self.move
+
+    def reset(self):
         self.time = time.time()
         self.beg = self.current
         self.distance = self.beg.distance(self.end)
-        while self.current != self.end:
-            yield self.move
 
     def move(self):
         self.canvas.move(self.id, *self.increment)
@@ -118,20 +122,28 @@ class Motion:
 
 class BounceBall(Motion):
 
-    def kick(self, direction: Point, speed=8):
-        self.direction = direction
-        self.speed = speed
-        self.end = self.direction + self.current
+    chaos = 3
+
+    def kick(self, direction: Point):
+        self.canvas.update()
+
+        c1, c2 = -self.chaos, self.chaos
+        chaoticx, chaoticy = random.randint(c1, c2), random.randint(c1, c2)
+        self.direction = direction + Coord(chaoticx, chaoticy)
+        self.end = self.direction * self.canvas.winfo_height()
+        self.reset()
 
     @property
     def increment(self):
         self.canvas.update()
-        self.end += self.get_bounce()
+        bounce = self.get_bounce()
+        if bounce != Coord(0, 0):
+            self.kick(bounce)
         return self.future - self.current
 
     def get_bounce(self):
+        self.canvas.update()
         x1, y1, x2, y2 = self.canvas.bbox(self.id)
-
         bounce = Coord(0, 0)
         if x1 <= self.bound_x1:
             print('x1', x1, self.bound_x1)
