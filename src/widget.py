@@ -106,3 +106,12 @@ class PrimaryCheckbutton(tk.Checkbutton):
         super().__init__(*args, image=img, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):
             self.init()
+
+
+def configure(obj: tk.Widget, cls, **kwds):
+    """Configures all children of a given class w/ kwds."""
+    for child in obj.children:
+        configure(child)
+    if isinstance(obj, cls):
+        obj.configure(**kwds)
+        obj.update()
