@@ -1,13 +1,6 @@
 import tkinter as tk
-from configparser import ConfigParser
-from . import THEME, IMAGES
 
-parser = ConfigParser()
-parser.read(THEME)
-
-primary = parser[.get('primary')]
-secondary = parser['secondary']
-base = parser['base']
+from . import IMAGES
 
 
 class SecondaryFrame(tk.Frame):
