@@ -17,14 +17,14 @@ class Window(widget.PrimaryCanvas):
     def __coord(self, id):
         return Coord(*self.coords(id))
 
-    def __set(self, view: View, coord: Coord):
-        wid = view.draw(coord, anchor='nw')
+    def __set(self, view: View, end: Coord):
+        wid = view.draw(end, anchor='nw')
         self.current = view
         self.views[view] = wid
         return wid
 
-    def set_view(self, view: View, coord: Coord = None):
-        return self.__set(view, coord or self.origin)
+    def set_view(self, view: View, end: Coord = None):
+        return self.__set(view, end or self.origin)
 
     def move_view(self, view: View, end: Coord):
         wid = self.views.get(view)
@@ -33,11 +33,11 @@ class Window(widget.PrimaryCanvas):
                 wid, end, speed=self.animation_speed
             )
 
-    def move_in(self, view: View, direction: Direction):
+    def move_in(self, view: View, direction: Direction, end: Coord = None):
         distance = self.get_distance(direction)
         start = self.origin + distance
         wid = self.__set(view, start)
-        self.move_view(view, self.origin)
+        self.move_view(view, end or self.origin)
         return wid
 
     def move_out(self, view: View, direction: Direction):
@@ -83,9 +83,18 @@ class Window(widget.PrimaryCanvas):
         return Coord(self.canvasx(0), self.canvasy(0))
 
     @property
+    def centery(self):
+        self.update()
+        return self.origin.midpoint(Coord(0, self.winfo_reqheight()))
+
+    @property
+    def centerx(self):
+        self.update()
+        return self.origin.midpoint(Coord(self.winfo_reqwidth(), 0))
+
+    @property
     def center(self):
-        br = self.origin + Coord(self.winfo_reqwidth(), self.winfo_reqheight())
-        return self.origin.midpoint(br)
+        return self.centerx + self.centery
 
 
 class DrawType(Enum):
