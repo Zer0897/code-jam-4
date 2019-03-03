@@ -47,7 +47,7 @@ class Window(widget.PrimaryCanvas):
         del self.views[view]
 
     def change_view(self, view: View, direction: Direction = None):
-        if direction is None:
+        if direction is None or self.current is None:
             self.set_view(view)
             return
         if not isinstance(direction, Direction):

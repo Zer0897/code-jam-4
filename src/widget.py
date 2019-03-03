@@ -86,7 +86,7 @@ class PrimaryLabel(tk.Label):
 
 class PrimaryCanvas(tk.Canvas):
     DEFAULT = {
-        'bg': 'black'
+        'bg': 'gray'
     }
 
     def __init__(self, *args, **kwds):
