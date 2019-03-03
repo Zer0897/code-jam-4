@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from . import widget
-from .animate import Coord, Animater, Direction
+from .animate import Coord, Animater, Direction, Motion
 
 
 class Window(widget.PrimaryCanvas):
@@ -17,14 +17,14 @@ class Window(widget.PrimaryCanvas):
     def __coord(self, id):
         return Coord(*self.coords(id))
 
-    def __set(self, view: View, coord: Coord):
-        wid = view.draw(coord, anchor='nw')
+    def __set(self, view: View, end: Coord):
+        wid = view.draw(end, anchor='nw')
+        self.current = view
         self.views[view] = wid
         return wid
 
-    def set_view(self, view: View):
-        self.current = view
-        self.__set(self.current, self.origin)
+    def set_view(self, view: View, end: Coord = None):
+        return self.__set(view, end or self.origin)
 
     def move_view(self, view: View, end: Coord):
         wid = self.views.get(view)
@@ -33,11 +33,11 @@ class Window(widget.PrimaryCanvas):
                 wid, end, speed=self.animation_speed
             )
 
-    def move_in(self, view: View, direction: Direction):
+    def move_in(self, view: View, direction: Direction, end: Coord = None):
         distance = self.get_distance(direction)
         start = self.origin + distance
         wid = self.__set(view, start)
-        self.move_view(view, self.origin)
+        self.move_view(view, end or self.origin)
         return wid
 
     def move_out(self, view: View, direction: Direction):
@@ -52,14 +52,11 @@ class Window(widget.PrimaryCanvas):
             return
         if not isinstance(direction, Direction):
             direction = Direction[direction.upper()]  # Cast string for convenience
-
         self.animater.clear()
-
         last = self.current
-        self.current = view
+
         self.move_in(self.current, direction.flip())
         self.move_out(last, direction)
-
         self.animater.start()
 
     def get_distance(self, direction: Direction):
@@ -73,6 +70,10 @@ class Window(widget.PrimaryCanvas):
         else:
             raise NotImplementedError
 
+    def run(self, motion: Motion):
+        self.animater.add(motion)
+        self.animater.start()
+
     @property
     def active(self):
         return self.animater.running
@@ -80,6 +81,20 @@ class Window(widget.PrimaryCanvas):
     @property
     def origin(self):
         return Coord(self.canvasx(0), self.canvasy(0))
+
+    @property
+    def centery(self):
+        self.update()
+        return self.origin.midpoint(Coord(0, self.winfo_reqheight()))
+
+    @property
+    def centerx(self):
+        self.update()
+        return self.origin.midpoint(Coord(self.winfo_reqwidth(), 0))
+
+    @property
+    def center(self):
+        return self.centerx + self.centery
 
 
 class DrawType(Enum):

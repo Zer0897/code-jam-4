@@ -1,7 +1,67 @@
 import json
 
 from .view import Window, View
+from .animate import Direction, BounceBall
 from . import widget, DOCS
+
+
+class Splash(widget.PrimaryFrame):
+
+    with (DOCS / 'questions.json').open() as fp:
+        questions = json.load(fp)
+
+    def init(self):
+        self.intro = Intro(self)
+        self.intro.pack(fill='both', expand=True)
+
+        self.btn_confirm = widget.PrimaryButton(self.intro.window, command=self.next, text='Okay')
+        bouncer = View(self.intro.window, window=self.btn_confirm)
+
+        self.bounce(bouncer)
+
+    def bounce(self, view):
+        start = view.master.center + (Direction.LEFT * 175) + (Direction.DOWN * 100)
+        wid = view.master.set_view(view, start)
+        motion = BounceBall(view.master, wid, view.master.origin, speed=6)
+        motion.kick(Direction.UP)
+        self.after(0, view.master.run, motion)
+
+    def next(self):
+        pass
+
+
+class Intro(widget.PrimaryFrame):
+    intro = (DOCS / 'intro.txt').read_text()
+
+    def init(self):
+        self.window = Window(self, bg='gray')
+        self.window.pack(fill='both', expand=True)
+        self.update()
+
+        width = self.winfo_reqwidth()
+        self.title = View(
+            self.window,
+            text=self.master.master.master.title(),  # yikes
+            font=('Courier', 17),
+            width=width, justify='center'
+        )
+        self.intro = View(
+            self.window,
+            text=self.intro,
+            width=width,
+            font=('sys', 12), justify='center'
+        )
+        self.update()
+
+        self.after(0, self.build)
+
+    def build(self):
+        self.window.set_view(self.title)
+        adjust = (Direction.LEFT * 175) + (Direction.DOWN * 100)
+        self.window.set_view(
+            self.intro,
+            self.window.center + adjust
+        )
 
 
 class Question(widget.PrimaryFrame):
@@ -24,33 +84,3 @@ class Question(widget.PrimaryFrame):
 
         self.title.pack(fill='both', expand=True)
         self.choices.pack(fill='both', expand=True)
-
-
-class Splash(widget.PrimaryFrame):
-
-    intro = (DOCS / 'intro.txt').read_text()
-    with (DOCS / 'questions.json').open() as fp:
-        questions = json.load(fp)
-
-    def init(self):
-        self.title = widget.PrimaryLabel(
-            self, text=self.master.master.title(),
-            font=('Courier', 14), wraplength=300
-        )
-
-        self.window = Window(self, bg='gray')
-        self.intro = View(
-            self.window,
-            text=self.intro,
-            width=self.window.winfo_reqwidth(),
-            font=('sys', 10), justify='center'
-        )
-        self.window.set_view(self.intro)
-
-        self.btn_confirm = widget.PrimaryButton(self, command=self.begin, text='Okay')
-
-        self.title.pack(fill='x', pady=20)
-        self.btn_confirm.pack(side='bottom', expand=True)
-
-    def begin(self):
-        pass
