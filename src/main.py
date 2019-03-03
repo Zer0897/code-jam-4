@@ -1,9 +1,10 @@
 import configparser
 import tkinter as tk
-from pygame import mixer
+from contextlib import suppress
 
 from .front import Front
-from . import SETTINGS
+# from .splash import Splash
+from . import SETTINGS, widget
 
 
 parser = configparser.ConfigParser()
@@ -14,15 +15,21 @@ class App(tk.Tk):
     appconfig = parser['APP']
 
     def __init__(self, *args, **kwds):
-        title = self.appconfig.pop('title')
         super().__init__(*args, **kwds)
-        self.title = title
-        mixer.init()
+        self.resizable(False, False)
 
-        self.geometry = '400x500'
-        self.minsize(400, 500)
-        self.maxsize(400, 500)
+        for name, val in parser['APP'].items():
+            getattr(self, name)(val)
 
-        self.front = Front(self)
+        self.frame = widget.PrimaryFrame(self)
+        self.frame.pack(expand=True, fill='both')
 
+        # self.splash = Splash(self.frame)
+        # self.splash.pack(expand=True, fill='both')
+        self.front = Front(self.frame)
         self.front.pack(fill='both', expand=True)
+
+    def cleanup(self):
+        with suppress(Exception):
+            self.front.cleanup()
+            self.destroy()
