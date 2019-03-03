@@ -21,36 +21,27 @@ class App(tk.Tk):
         for name, val in parser['APP'].items():
             getattr(self, name)(val)
 
-        self.window = Window(self)
-        self.window.pack(expand=True, fill='both')
-        self.update()
+        #self.window = Window(self)
+        #self.window.pack(expand=True, fill='both')
+        #elf.update()
 
-        self.splash = View(
-            self.window,
-            window=Splash(self.window),
-            height=self.winfo_height(),
-            width=self.winfo_width()
-        )
-        self.front = View(
-            self.window,
-            window=Front(self.window),
-            height=self.winfo_height(),
-            width=self.winfo_width()
-        )
-        self.execution_order = iter((
-            self.splash,
-            self.front,
-            # self.result
-        ))
+        # self.splash = Splash(self)
+        self.front = Front(self)
+        self.front.pack(fill='both', expand=True)
+        # self.execution_order = iter((
+        #     # self.splash,
+        #     self.front,
+        #     # self.result
+        # ))
         self.update()
-        self.current: View = None
-        self.after(0, self.switch)
 
     def switch(self):
         try:
             self.update()
             if self.current is not None:
                 self.current.data.cleanup()
+                self.current.data.pack_forget()
+                self.current.data.destroy()
             self.current = next(self.execution_order)
             self.build(self.current)
         except StopIteration:
@@ -58,9 +49,8 @@ class App(tk.Tk):
 
     def build(self, view):
         self.update()
-        view.master.change_view(view, 'up')
-        self.update()
         view.data.build()
+        self.window.set_view(view)
 
     def cleanup(self):
         with suppress(Exception):

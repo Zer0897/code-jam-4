@@ -56,7 +56,8 @@ class Window(widget.PrimaryCanvas):
         last = self.current
 
         self.move_in(self.current, direction.flip())
-        self.move_out(last, direction)
+        # self.move_out(last, direction)
+
         self.animater.start()
 
     def get_distance(self, direction: Direction):

@@ -88,7 +88,7 @@ class PrimaryCanvas(tk.Canvas):
     DEFAULT = {
         'bg': 'gray'
     }
-
+    
     def __init__(self, *args, **kwds):
         super().__init__(*args, **{**self.DEFAULT, **kwds})
         if hasattr(self, 'init'):

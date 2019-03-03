@@ -30,8 +30,8 @@ class Front(widget.PrimaryFrame):
             data: dict = self.cache.next()
             image = process_image(
                 data.pop('image'),
-                self.window.winfo_width(),
-                self.window.winfo_height()
+                self.window.winfo_reqwidth(),
+                self.window.winfo_reqheight()
             )
             name = data.pop('name')
             self.__load(name, image, data)
@@ -56,6 +56,7 @@ class Front(widget.PrimaryFrame):
         self.update()
 
     def init(self):
+        self.update()
         self.title = widget.PrimaryLabel(self)
         self.window = Window(self)
         self.commandbar = widget.SecondaryFrame(self)
@@ -75,7 +76,6 @@ class Front(widget.PrimaryFrame):
         )
         self.update()
 
-    def build(self):
         self.title.pack(fill='x', expand=True)
         self.window.pack(fill='both', expand=True)
         self.commandbar.pack(side='bottom', fill='both', expand=True)

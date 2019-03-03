@@ -36,8 +36,11 @@ class Animater:
             try:
                 move = next(motion)
                 move()
+                self.canvas.update()
             except StopIteration:
                 self._motions.remove(motion)
+        self.canvas.update()
+        # self.canvas.after(10, self.run)
 
     def add(self, motion: Motion):
         self._motions.add(motion.start())
@@ -79,6 +82,7 @@ class Motion:
         """
         self.reset()
         while self.current != self.end:
+            print(self.current, self.end)
             yield self.move
 
     def reset(self):
@@ -135,14 +139,12 @@ class BounceBall(Motion):
 
     @property
     def increment(self):
-        self.canvas.update()
         bounce = self.get_bounce()
         if bounce != Coord(0, 0):
             self.kick(bounce)
         return self.future - self.current
 
     def get_bounce(self):
-        self.canvas.update()
         x1, y1, x2, y2 = self.canvas.bbox(self.id)
         bounce = Coord(0, 0)
         if x1 <= self.bound_x1:
@@ -169,12 +171,10 @@ class BounceBall(Motion):
 
     @property
     def bound_x2(self):
-        # self.canvas.update()
         return self.bound_x1 + self.canvas.winfo_width()
 
     @property
     def bound_y2(self):
-        # self.canvas.update()
         return self.bound_y1 + self.canvas.winfo_height()
 
 
