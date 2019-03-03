@@ -5,14 +5,14 @@ from . import THEME, IMAGES
 parser = ConfigParser()
 parser.read(THEME)
 
-primary = parser['primary']
+primary = parser[.get('primary')]
 secondary = parser['secondary']
 base = parser['base']
 
 
 class SecondaryFrame(tk.Frame):
     DEFAULT = {
-        **base, **secondary,
+        'bg': 'gray'
     }
 
     def __init__(self, *args, **kwds):
@@ -23,7 +23,6 @@ class SecondaryFrame(tk.Frame):
 
 class SecondaryButton(tk.Button):
     DEFAULT = {
-        **base, **secondary,
         'height': 1,
         'width': 10
     }
@@ -36,9 +35,9 @@ class SecondaryButton(tk.Button):
 
 class SecondaryLabel(tk.Label):
     DEFAULT = {
-        **base, **secondary,
         'justify': 'left',
         'width': 10,
+        'bg': 'gray'
     }
 
     def __init__(self, *args, **kwds):
@@ -48,9 +47,7 @@ class SecondaryLabel(tk.Label):
 
 
 class SecondaryCanvas(tk.Canvas):
-    DEFAULT = {
-        **base, **secondary,
-    }
+    DEFAULT = {}
 
     def __init__(self, *args, **kwds):
         super().__init__(*args, **{**self.DEFAULT, **kwds})
@@ -60,7 +57,7 @@ class SecondaryCanvas(tk.Canvas):
 
 class PrimaryFrame(tk.Frame):
     DEFAULT = {
-        **base, **primary
+        'bg': 'black'
     }
 
     def __init__(self, *args, **kwds):
@@ -71,8 +68,8 @@ class PrimaryFrame(tk.Frame):
 
 class PrimaryButton(tk.Button):
     DEFAULT = {
-        **base, **primary,
-        'height': 3, 'width': 10
+        'height': 3,
+        'width': 10
     }
 
     def __init__(self, *args, **kwds):
@@ -83,8 +80,9 @@ class PrimaryButton(tk.Button):
 
 class PrimaryLabel(tk.Label):
     DEFAULT = {
-        **base, **primary,
         'font': ('Courier', 25),
+        'bg': 'black',
+        'fg': 'gray'
     }
 
     def __init__(self, *args, **kwds):
@@ -95,7 +93,7 @@ class PrimaryLabel(tk.Label):
 
 class PrimaryCanvas(tk.Canvas):
     DEFAULT = {
-        **base, **primary,
+        'bg': 'black'
     }
 
     def __init__(self, *args, **kwds):
@@ -106,7 +104,7 @@ class PrimaryCanvas(tk.Canvas):
 
 class PrimaryCheckbutton(tk.Checkbutton):
     DEFAULT = {
-        **base, **primary,
+        'bg': 'black'
     }
     img = IMAGES / 'checkbox.png'
 
