@@ -24,7 +24,7 @@ class Splash(widget.PrimaryFrame):
 
     def bounce(self, view):
         self.update()
-        wid = self.intro.window.set_view(view, (Direction.RIGHT * 100) + (Direction.DOWN * 100))
+        wid = self.intro.window.set_view(view, (Direction.RIGHT * 100) + (Direction.DOWN * 500))
         motion = BounceBall(view.master, wid, view.master.origin, speed=6)
         view.master.animater.add(motion)
         motion.kick(Direction.UP + Direction.LEFT)
