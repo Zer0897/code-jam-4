@@ -22,16 +22,18 @@ class Window(widget.PrimaryCanvas):
         self.views[view] = wid
         return wid
 
-    def set_view(self, view: View):
+    def set_view(self, view: View, end: Coord = None):
         self.current = view
-        self.__set(self.current, self.origin)
+        if end is None:
+            end = self.origin
+        return self.__set(self.current, end)
 
     def move_view(self, view: View, end: Coord):
         wid = self.views.get(view)
         if wid is not None:
             self.animater.add_motion(
                 wid, end, speed=self.animation_speed
-            )
+        )
 
     def move_in(self, view: View, direction: Direction):
         distance = self.get_distance(direction)
