@@ -36,11 +36,8 @@ class Animater:
             try:
                 move = next(motion)
                 move()
-                self.canvas.update()
             except StopIteration:
                 self._motions.remove(motion)
-        self.canvas.update()
-        # self.canvas.after(10, self.run)
 
     def add(self, motion: Motion):
         self._motions.add(motion.start())
@@ -82,7 +79,6 @@ class Motion:
         """
         self.reset()
         while self.current != self.end:
-            print(self.current, self.end)
             yield self.move
 
     def reset(self):
