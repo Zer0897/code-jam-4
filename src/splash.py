@@ -1,7 +1,7 @@
 import json
 
 from .view import Window, View
-from .animate import Direction, BounceBall
+from .animate import Direction, BounceBall, Direction
 from . import widget, DOCS
 
 
@@ -16,26 +16,23 @@ class Splash(widget.PrimaryFrame):
         self.btn_confirm = widget.PrimaryButton(
             self.intro.window, command=self.switch, text='Okay'
         )
-        self.update()
-
-    def build(self):
-        self.update()
-        self.intro.pack(fill='both', expand=True)
-        self.intro.build()
         self.bounce(
             View(self.intro.window, window=self.btn_confirm)
         )
+        self.intro.pack(fill='both', expand=True)
+        self.after(0, self.intro.build)
 
     def bounce(self, view):
         self.update()
-        start = view.master.center + (Direction.LEFT * 175) + (Direction.DOWN * 100)
-        wid = view.master.set_view(view, start)
+        wid = self.intro.window.set_view(view, (Direction.RIGHT * 100) + (Direction.DOWN * 100))
         motion = BounceBall(view.master, wid, view.master.origin, speed=6)
-        motion.kick(Direction.UP)
-        self.after(0, view.master.run, motion)
+        view.master.animater.add(motion)
+        motion.kick(Direction.UP + Direction.LEFT)
+        self.update()
+        self.after(0, view.master.animater.start)
 
     def switch(self):
-        self.master.master.switch()
+        self.master.switch()
 
     def cleanup(self):
         self.intro.cleanup()
@@ -46,29 +43,27 @@ class Intro(widget.PrimaryFrame):
 
     def init(self):
         self.window = Window(self)
-        self.window.pack(expand=True, fill='both')
-        self.update()
+        width = 400
+        self.title = widget.PrimaryLabel(
+            self,
+            text=self.master.master.title(),  # yikes
+            font=('Courier', 14),
+            wraplength=width, justify='center', fg='blue',
 
-        width = self.winfo_reqwidth()
-        self.title = View(
-            self.window,
-            text=self.master.master.master.title(),  # yikes
-            font=('Courier', 17),
-            width=width, justify='center'
         )
+        self.title.pack(fill='both', expand=True)
+        self.window.pack(fill='both', expand=True)
+        self.update()
         self.intro = View(
             self.window,
             text=self.intro,
             width=width,
-            font=('sys', 12), justify='center'
+            font=('sys', 12), justify='center',
+            fill='red'
         )
 
     def build(self):
-        self.update()
-        adjust = (Direction.LEFT * 175) + (Direction.DOWN * 100)
-
-        self.window.set_view(self.title)
-        self.window.set_view(self.intro, self.window.center + adjust)
+        self.after(0, self.window.set_view, self.intro)
         self.update()
 
     def cleanup(self):

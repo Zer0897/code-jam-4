@@ -36,6 +36,7 @@ class Animater:
             try:
                 move = next(motion)
                 move()
+                self.canvas.update()
             except StopIteration:
                 self._motions.remove(motion)
 
@@ -87,6 +88,7 @@ class Motion:
         self.distance = self.beg.distance(self.end)
 
     def move(self):
+        (self.increment)
         self.canvas.move(self.id, *self.increment)
         self.canvas.update_idletasks()
 
@@ -101,7 +103,7 @@ class Motion:
     @property
     def increment(self):
         future = self.future
-        if future.distance(self.end) > self.journey:
+        if future.distance(self.end) >= self.journey:
             return self.end - self.current
         else:
             return future - self.current
@@ -122,16 +124,16 @@ class Motion:
 
 class BounceBall(Motion):
 
-    chaos = 3
+    chaos = 1
 
     def kick(self, direction: Point):
-        self.canvas.update()
 
         c1, c2 = -self.chaos, self.chaos
         chaoticx, chaoticy = random.randint(c1, c2), random.randint(c1, c2)
         self.direction = direction + Coord(chaoticx, chaoticy)
-        self.end = self.direction * self.canvas.winfo_height()
+        self.end = self.direction * 600
         self.reset()
+        self.canvas.update()
 
     @property
     def increment(self):
@@ -141,6 +143,7 @@ class BounceBall(Motion):
         return self.future - self.current
 
     def get_bounce(self):
+        self.canvas.update()
         x1, y1, x2, y2 = self.canvas.bbox(self.id)
         bounce = Coord(0, 0)
         if x1 <= self.bound_x1:
@@ -155,18 +158,20 @@ class BounceBall(Motion):
 
     @property
     def bound_x1(self):
-        return self.canvas.winfo_x()
+        return self.canvas.winfo_x() + 1
 
     @property
     def bound_y1(self):
-        return self.canvas.winfo_y()
+        return self.canvas.winfo_y() + 1
 
     @property
     def bound_x2(self):
-        return self.bound_x1 + self.canvas.winfo_width()
+        self.canvas.update()
+        return self.bound_x1 + self.canvas.winfo_reqwidth()
 
     @property
     def bound_y2(self):
+        self.canvas.update()
         return self.bound_y1 + self.canvas.winfo_height()
 
 

@@ -21,16 +21,15 @@ class App(tk.Tk):
         for name, val in parser['APP'].items():
             getattr(self, name)(val)
 
-        self.frame = widget.PrimaryFrame(self)
-        self.frame.pack(expand=True, fill='both')
-
-        self.splash = Splash(self.frame)
+        self.splash = Splash(self)
         self.splash.pack(expand=True, fill='both')
-        self.switch()
+        self.update()
+        # self.switch()
 
     def switch(self):
         self.splash.pack_forget()
-        self.front = Front(self.frame)
+        self.splash.cleanup()
+        self.front = Front(self)
         self.front.pack(fill='both', expand=True)
 
     def cleanup(self):
