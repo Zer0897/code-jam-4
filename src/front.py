@@ -38,6 +38,7 @@ class Front(widget.PrimaryFrame):
             self.window.change_view(self.image, direction)
 
         else:
+            self.update()
             self.loadscreen = Loading(
                 self.window,
                 width=self.window.winfo_width(),
